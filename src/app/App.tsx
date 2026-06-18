@@ -16,26 +16,13 @@ import bgSaloon from "@/imports/bg-saloon.png.png";
 import bgDuelStreet from "@/imports/bg-duel-street.png.png";
 import bgSunsetEnding from "@/imports/bg-sunset-ending.png.png";
 
-// ─── Asset registry ───────────────────────────────────────────────────────────
 const SPRITES: Record<string, string> = {
-  "image.png": img0,
-  "image-1.png": img1,
-  "image-2.png": img2,
-  "image-3.png": img3,
-  "image-4.png": img4,
-  "image-5.png": img5,
-  "image-6.png": img6,
-  "image-7.png": img7,
-  "image-8.png": img8,
-  "cowboy-neutral.png": img0,
-  "cowboy-angry.png": img1,
-  "cowboy-happy.png": img2,
-  "robot-neutral.png": img3,
-  "bartender-neutral.png": img4,
-  "robot-tense.png": img5,
-  "robot-happy.png": img6,
-  "bartender-worried.png": img7,
-  "bartender-relieved.png": img8,
+  "image.png": img0, "image-1.png": img1, "image-2.png": img2,
+  "image-3.png": img3, "image-4.png": img4, "image-5.png": img5,
+  "image-6.png": img6, "image-7.png": img7, "image-8.png": img8,
+  "cowboy-neutral.png": img0, "cowboy-angry.png": img1, "cowboy-happy.png": img2,
+  "robot-neutral.png": img3, "bartender-neutral.png": img4, "robot-tense.png": img5,
+  "robot-happy.png": img6, "bartender-worried.png": img7, "bartender-relieved.png": img8,
 };
 
 const BACKGROUNDS: Record<string, string> = {
@@ -47,17 +34,9 @@ const BACKGROUNDS: Record<string, string> = {
 const getBg = (key: string): string => BACKGROUNDS[key] ?? bgSaloon;
 
 type Beat = {
-  id: string;
-  type: "dialogue" | "choice" | "result";
-  background: string;
-  left: string;
-  center: string;
-  right: string;
-  speaker: string;
-  line: string;
-  next: string;
-  choices: string;
-  end: boolean;
+  id: string; type: "dialogue" | "choice" | "result";
+  background: string; left: string; center: string; right: string;
+  speaker: string; line: string; next: string; choices: string; end: boolean;
 };
 
 const STORY: Beat[] = [
@@ -104,15 +83,9 @@ function parseChoices(raw: string): { label: string; target: string }[] {
 }
 
 const SPEAKER_COLORS: Record<string, string> = {
-  Cowboy: "#d4944a",
-  Robot: "#4ac8d4",
-  Bartender: "#c47a8a",
-  Narrator: "#b8a88a",
+  Cowboy: "#d4944a", Robot: "#4ac8d4", Bartender: "#c47a8a", Narrator: "#b8a88a",
 };
-
-function speakerColor(name: string) {
-  return SPEAKER_COLORS[name] ?? "#e0d0b8";
-}
+function speakerColor(name: string) { return SPEAKER_COLORS[name] ?? "#e0d0b8"; }
 
 function Sprite({ src, side }: { src: string; side: "left" | "center" | "right" }) {
   const resolved = SPRITES[src];
@@ -135,13 +108,11 @@ function useTypingText(text: string, speed = 28) {
   const [displayed, setDisplayed] = useState("");
   const [done, setDone] = useState(false);
   useEffect(() => {
-    setDisplayed("");
-    setDone(false);
+    setDisplayed(""); setDone(false);
     if (!text) return;
     let i = 0;
     const id = setInterval(() => {
-      i++;
-      setDisplayed(text.slice(0, i));
+      i++; setDisplayed(text.slice(0, i));
       if (i >= text.length) { clearInterval(id); setDone(true); }
     }, speed);
     return () => clearInterval(id);
@@ -158,7 +129,7 @@ function endingTitle(prevId: string) {
 }
 
 export default function App() {
-  const [screen, setScreen] = useState<"start" | "game">("start");
+  const [screen, setScreen] = useState<"start" | "game" | "credits">("start");
   const [beatId, setBeatId] = useState("s1_01");
   const [branch, setBranch] = useState("");
   const [prevBg, setPrevBg] = useState("");
@@ -182,10 +153,7 @@ export default function App() {
     if (beat.type === "dialogue" && beat.next) setBeatId(beat.next);
   }
 
-  function choose(target: string) {
-    setBranch(target);
-    setBeatId(target);
-  }
+  function choose(target: string) { setBranch(target); setBeatId(target); }
 
   const bgUrl = getBg(beat.background);
 
@@ -193,6 +161,7 @@ export default function App() {
     <div className="size-full flex items-center justify-center bg-[#0a0604]" style={{ fontFamily: "Crimson Text, Georgia, serif" }}>
       <div className="relative overflow-hidden select-none" style={{ aspectRatio: "16/9", width: "min(100vw, 177.78vh)", height: "min(56.25vw, 100vh)" }}>
 
+        {/* ── START SCREEN ── */}
         {screen === "start" && (
           <>
             <style>{`
@@ -211,6 +180,28 @@ export default function App() {
           </>
         )}
 
+        {/* ── CREDITS SCREEN ── */}
+        {screen === "credits" && (
+          <>
+            <div className="absolute inset-0" style={{ backgroundImage: `url(${bgSunsetEnding})`, backgroundSize: "cover", backgroundPosition: "center" }} />
+            <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.3) 55%, rgba(0,0,0,0.72) 100%)" }} />
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-[2.5%]">
+              <div className="w-[18%] h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(220,175,70,0.6), transparent)" }} />
+              <p style={{ fontFamily: "Crimson Text, Georgia, serif", fontStyle: "italic", fontSize: "clamp(0.9rem, 2.2vw, 1.8rem)", color: "rgba(240,220,175,0.85)", letterSpacing: "0.06em", textShadow: "0 2px 12px rgba(0,0,0,0.8)" }}>
+                Thank you for watching / playing
+              </p>
+              <p style={{ fontFamily: "Cinzel, serif", fontWeight: 900, fontSize: "clamp(1.6rem, 4.5vw, 3.8rem)", color: "#e8c87a", letterSpacing: "0.18em", textShadow: "0 0 48px rgba(232,200,122,0.55), 0 2px 10px rgba(0,0,0,0.9)", textTransform: "uppercase", textAlign: "center", lineHeight: 1.15 }}>
+                Config Makeathon!
+              </p>
+              <div className="w-[18%] h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(220,175,70,0.6), transparent)" }} />
+              <button onClick={() => setScreen("start")} style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(0.55rem, 1.1vw, 0.9rem)", fontWeight: 600, letterSpacing: "0.25em", color: "rgba(200,170,110,0.65)", background: "none", border: "none", padding: "0", textTransform: "uppercase", textDecoration: "underline", textUnderlineOffset: "4px", cursor: "pointer", marginTop: "1%" }}>
+                Play Again
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* ── GAME SCREEN ── */}
         {screen === "game" && <>
           <div className="absolute inset-0 transition-opacity duration-500" style={{ backgroundImage: `url(${bgUrl})`, backgroundSize: "cover", backgroundPosition: "center", opacity: fadeBg ? 0 : 1 }} />
           <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,0.55) 100%)" }} />
@@ -230,8 +221,8 @@ export default function App() {
                 {choices.map(({ label, target }) => (
                   <button key={target} onClick={() => choose(target)} className="relative flex-1 py-[1.2%] px-[2%] text-center cursor-pointer group" style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(0.6rem, 1.4vw, 1.05rem)", fontWeight: 600, letterSpacing: "0.05em", color: "#f0e0b0", background: "linear-gradient(180deg, rgba(90,50,15,0.92) 0%, rgba(50,25,8,0.97) 100%)", border: "1px solid rgba(210,160,60,0.5)", borderRadius: "2px", textShadow: "0 1px 4px rgba(0,0,0,0.8)", transition: "all 0.15s ease", minHeight: "clamp(28px, 5vh, 48px)" }}>
                     <span className="block relative z-10">{label}</span>
-                    <span className="absolute left-[6%] top-1/2 -translate-y-1/2 opacity-50" style={{ fontSize: "0.6em", color: "#e8c060" }}>✦</span>
-                    <span className="absolute right-[6%] top-1/2 -translate-y-1/2 opacity-50" style={{ fontSize: "0.6em", color: "#e8c060" }}>✦</span>
+                    <span className="absolute left-[6%] top-1/2 -translate-y-1/2 opacity-50 group-hover:opacity-80" style={{ fontSize: "0.6em", color: "#e8c060" }}>✦</span>
+                    <span className="absolute right-[6%] top-1/2 -translate-y-1/2 opacity-50 group-hover:opacity-80" style={{ fontSize: "0.6em", color: "#e8c060" }}>✦</span>
                   </button>
                 ))}
               </div>
@@ -255,7 +246,7 @@ export default function App() {
                 </button>
               )}
               {beat.type === "result" && beat.end && (
-                <button onClick={() => { setBeatId("s1_01"); setBranch(""); setScreen("start"); }} className="absolute bottom-[10%] right-[2.5%] cursor-pointer" style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(0.45rem, 0.9vw, 0.72rem)", fontWeight: 600, letterSpacing: "0.15em", color: "#a89060", background: "none", border: "none", padding: "0", textTransform: "uppercase", textDecoration: "underline", textUnderlineOffset: "3px", cursor: "pointer" }}>Play Again</button>
+                <button onClick={() => { setBeatId("s1_01"); setBranch(""); setScreen("credits"); }} className="absolute bottom-[10%] right-[2.5%] cursor-pointer" style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(0.45rem, 0.9vw, 0.72rem)", fontWeight: 600, letterSpacing: "0.15em", color: "#a89060", background: "none", border: "none", padding: "0", textTransform: "uppercase", textDecoration: "underline", textUnderlineOffset: "3px", cursor: "pointer" }}>Play Again</button>
               )}
             </div>
           </div>
